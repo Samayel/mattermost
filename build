@@ -55,6 +55,7 @@ sed -r -i webpack.config.js \
 cd ../mattermost-server
 
 [ -f ${PATCHDIR}/mattermost-server/release.mk_osx+windows-package.patch ] && patch -p1 <${PATCHDIR}/mattermost-server/release.mk_osx+windows-package.patch
+[ -f ${PATCHDIR}/mattermost-server/enterprise-license.patch ]             && patch -p1 <${PATCHDIR}/mattermost-server/enterprise-license.patch
 
 sed -r -i Makefile \
     -e "s/^(\s*)BUILD_HASH =.*/\1BUILD_HASH = v${VERSION}/" \
