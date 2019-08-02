@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+
+set -e
+
+BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd -P )"
+
+VERSION=5.13.2
+
+SRCDIR="${BASEDIR}/src/${VERSION}"
+BLDDIR="${BASEDIR}/bld/${VERSION}"
+LOGDIR="${BASEDIR}/log/${VERSION}"
+PKGDIR="${BASEDIR}/pkg/${VERSION}"
+
+rm -rf "${BLDDIR}"
+rm -rf "${LOGDIR}"
+rm -rf "${PKGDIR}"
+
+mkdir -p "${SRCDIR}"
+mkdir -p "${BLDDIR}"
+mkdir -p "${LOGDIR}"
+mkdir -p "${PKGDIR}"
+
+PATCHDIR="${BASEDIR}/patch/${VERSION}"
+
+
+pushd "${SRCDIR}"
+
+[ -f mattermost-server-${VERSION}.tar.gz ] || wget -O mattermost-server-${VERSION}.tar.gz https://github.com/mattermost/mattermost-server/archive/v${VERSION}.tar.gz
+[ -f mattermost-webapp-${VERSION}.tar.gz ] || wget -O mattermost-webapp-${VERSION}.tar.gz https://github.com/mattermost/mattermost-webapp/archive/v${VERSION}.tar.gz
+
+popd
+
+
+pushd "${BLDDIR}"
+
+# Create the directory structure to match Go namespaces
+mkdir -p src/github.com/mattermost
+cd src/github.com/mattermost
+
+mkdir mattermost-server
+mkdir mattermost-webapp
+
+tar -xz --strip=1 -C mattermost-server --file="${SRCDIR}/mattermost-server-${VERSION}.tar.gz"
+tar -xz --strip=1 -C mattermost-webapp --file="${SRCDIR}/mattermost-webapp-${VERSION}.tar.gz"
+
+
+cd mattermost-webapp
+
+[ -f ${PATCHDIR}/mattermost-webapp/Makefile_mattermost-redux.patch ] && patch <${PATCHDIR}/mattermost-webapp/Makefile_mattermost-redux.patch
+
+sed -r -i webpack.config.js \
+    -e "s/^(\s*)COMMIT_HASH:(.*),$/\1COMMIT_HASH: JSON.stringify\(\"v${VERSION}\"\),/"
+
+
+cd ../mattermost-server
+
+[ -f ${PATCHDIR}/mattermost-server/release.mk_osx+windows-package.patch ] && patch -p1 <${PATCHDIR}/mattermost-server/release.mk_osx+windows-package.patch
+
+sed -r -i Makefile \
+    -e "s/^(\s*)BUILD_HASH =.*/\1BUILD_HASH = v${VERSION}/" \
+    -e 's/BUILD_DATE = \$\(shell date -u\)/BUILD_DATE = \$(shell date -u +'"'"'%Y-%m-%d %H:%M:%S'"'"')/'
+
+# The configuration isn't available at this time yet, modify the default.
+sed -r -i build/release.mk \
+    -e  's!config/config.json!config/default.json!' \
+    -e 's/\$\(DIST_PATH\)\/config\/config.json/\$\(DIST_PATH\)\/config\/default.json/'
+
+
+BUILD_NUMBER=${VERSION} make build-linux  | tee "${LOGDIR}/make_build-linux.log"
+BUILD_NUMBER=${VERSION} make build-client | tee "${LOGDIR}/make_build-client.log"
+BUILD_NUMBER=${VERSION} make package      | tee "${LOGDIR}/make_package.log"
+
+cp dist/mattermost-team-linux-amd64.tar.gz "${PKGDIR}/mattermost-team+enterprise-${VERSION}-linux-amd64.tar.gz"
+
+popd
+
+
+exit 0
