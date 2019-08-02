@@ -5,6 +5,7 @@ set -e
 BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd -P )"
 
 VERSION=5.13.2
+QUYOVERSION=01
 
 SRCDIR="${BASEDIR}/src/${VERSION}"
 BLDDIR="${BASEDIR}/bld/${VERSION}"
@@ -49,7 +50,7 @@ cd mattermost-webapp
 [ -f ${PATCHDIR}/mattermost-webapp/Makefile_mattermost-redux.patch ] && patch <${PATCHDIR}/mattermost-webapp/Makefile_mattermost-redux.patch
 
 sed -r -i webpack.config.js \
-    -e "s/^(\s*)COMMIT_HASH:(.*),$/\1COMMIT_HASH: JSON.stringify\(\"v${VERSION}\"\),/"
+    -e "s/^(\s*)COMMIT_HASH:(.*),$/\1COMMIT_HASH: JSON.stringify\(\"v${VERSION}.quyo.${QUYOVERSION}\"\),/"
 
 
 cd ../mattermost-server
@@ -58,7 +59,7 @@ cd ../mattermost-server
 [ -f ${PATCHDIR}/mattermost-server/enterprise-license.patch ]             && patch -p1 <${PATCHDIR}/mattermost-server/enterprise-license.patch
 
 sed -r -i Makefile \
-    -e "s/^(\s*)BUILD_HASH =.*/\1BUILD_HASH = v${VERSION}/" \
+    -e "s/^(\s*)BUILD_HASH =.*/\1BUILD_HASH = v${VERSION}.quyo.${QUYOVERSION}/" \
     -e 's/BUILD_DATE = \$\(shell date -u\)/BUILD_DATE = \$(shell date -u +'"'"'%Y-%m-%d %H:%M:%S'"'"')/'
 
 # The configuration isn't available at this time yet, modify the default.
@@ -71,7 +72,7 @@ BUILD_NUMBER=${VERSION} make build-linux  | tee "${LOGDIR}/make_build-linux.log"
 BUILD_NUMBER=${VERSION} make build-client | tee "${LOGDIR}/make_build-client.log"
 BUILD_NUMBER=${VERSION} make package      | tee "${LOGDIR}/make_package.log"
 
-cp dist/mattermost-team-linux-amd64.tar.gz "${PKGDIR}/mattermost-team+enterprise-${VERSION}-linux-amd64.tar.gz"
+cp dist/mattermost-team-linux-amd64.tar.gz "${PKGDIR}/mattermost-team+enterprise-${VERSION}.quyo.${QUYOVERSION}-linux-amd64.tar.gz"
 
 popd
 
