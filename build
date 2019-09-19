@@ -4,7 +4,7 @@ set -e
 
 BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd -P )"
 
-VERSION=5.14.2
+VERSION=5.15.0
 QUYOVERSION=01
 
 SRCDIR="${BASEDIR}/src/${VERSION}"
@@ -47,7 +47,8 @@ tar -xz --strip=1 -C mattermost-webapp --file="${SRCDIR}/mattermost-webapp-${VER
 
 cd mattermost-webapp
 
-[ -f ${PATCHDIR}/mattermost-webapp/Makefile_mattermost-redux.patch ] && patch <${PATCHDIR}/mattermost-webapp/Makefile_mattermost-redux.patch
+[ -f ${PATCHDIR}/mattermost-webapp/Makefile_mattermost-redux.patch ] && patch     <${PATCHDIR}/mattermost-webapp/Makefile_mattermost-redux.patch
+[ -f ${PATCHDIR}/mattermost-webapp/katex_maxexpand.patch ]           && patch -p1 <${PATCHDIR}/mattermost-webapp/katex_maxexpand.patch
 
 sed -r -i webpack.config.js \
     -e "s/^(\s*)COMMIT_HASH:(.*),$/\1COMMIT_HASH: JSON.stringify\(\"v${VERSION}.quyo.${QUYOVERSION}\"\),/"
