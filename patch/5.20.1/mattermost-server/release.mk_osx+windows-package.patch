@@ -9,11 +9,11 @@ index 83f5e1bf6..2f2587d24 100644
 -	@# Make osx package
 -	@# Copy binary
 -ifeq ($(BUILDER_GOOS_GOARCH),"darwin_amd64")
--	cp $(GOBIN)/mattermost $(DIST_PATH)/bin # from native bin dir, not cross-compiled
--	cp $(GOBIN)/platform $(DIST_PATH)/bin # from native bin dir, not cross-compiled
+-	cp $(GOPATH)/bin/mattermost $(DIST_PATH)/bin # from native bin dir, not cross-compiled
+-	cp $(GOPATH)/bin/platform $(DIST_PATH)/bin # from native bin dir, not cross-compiled
 -else
--	cp $(GOBIN)/darwin_amd64/mattermost $(DIST_PATH)/bin # from cross-compiled bin dir
--	cp $(GOBIN)/darwin_amd64/platform $(DIST_PATH)/bin # from cross-compiled bin dir
+-	cp $(GOPATH)/bin/darwin_amd64/mattermost $(DIST_PATH)/bin # from cross-compiled bin dir
+-	cp $(GOPATH)/bin/darwin_amd64/platform $(DIST_PATH)/bin # from cross-compiled bin dir
 -endif
 -	MMCTL_FILE="darwin_amd64.tar" && curl -f -O -L https://github.com/mattermost/mmctl/releases/download/$(MMCTL_REL_TO_DOWNLOAD)/$$MMCTL_FILE && tar -xvf $$MMCTL_FILE -C $(DIST_PATH)/bin && rm $$MMCTL_FILE
 -	@# Prepackage plugins
@@ -43,11 +43,11 @@ index 83f5e1bf6..2f2587d24 100644
 -	@# Make windows package
 -	@# Copy binary
 -ifeq ($(BUILDER_GOOS_GOARCH),"windows_amd64")
--	cp $(GOBIN)/mattermost.exe $(DIST_PATH)/bin # from native bin dir, not cross-compiled
--	cp $(GOBIN)/platform.exe $(DIST_PATH)/bin # from native bin dir, not cross-compiled
+-	cp $(GOPATH)/bin/mattermost.exe $(DIST_PATH)/bin # from native bin dir, not cross-compiled
+-	cp $(GOPATH)/bin/platform.exe $(DIST_PATH)/bin # from native bin dir, not cross-compiled
 -else
--	cp $(GOBIN)/windows_amd64/mattermost.exe $(DIST_PATH)/bin # from cross-compiled bin dir
--	cp $(GOBIN)/windows_amd64/platform.exe $(DIST_PATH)/bin # from cross-compiled bin dir
+-	cp $(GOPATH)/bin/windows_amd64/mattermost.exe $(DIST_PATH)/bin # from cross-compiled bin dir
+-	cp $(GOPATH)/bin/windows_amd64/platform.exe $(DIST_PATH)/bin # from cross-compiled bin dir
 -endif
 -	MMCTL_FILE="windows_amd64.zip" && curl -f -O -L https://github.com/mattermost/mmctl/releases/download/$(MMCTL_REL_TO_DOWNLOAD)/$$MMCTL_FILE && unzip -o $$MMCTL_FILE -d $(DIST_PATH)/bin && rm $$MMCTL_FILE
 -	@# Prepackage plugins
