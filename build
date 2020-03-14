@@ -4,7 +4,7 @@ set -e
 
 BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd -P )"
 
-VERSION=5.20.1
+VERSION=5.21.0
 QUYOVERSION=01
 
 SRCDIR="${BASEDIR}/src/${VERSION}"
@@ -69,6 +69,7 @@ sed -r -i build/release.mk \
     -e 's/\$\(DIST_PATH\)\/config\/config.json/\$\(DIST_PATH\)\/config\/default.json/'
 
 
+go mod vendor
 BUILD_NUMBER=${VERSION} make build-linux  | tee "${LOGDIR}/make_build-linux.log"
 BUILD_NUMBER=${VERSION} make build-client | tee "${LOGDIR}/make_build-client.log"
 BUILD_NUMBER=${VERSION} make package      | tee "${LOGDIR}/make_package.log"
