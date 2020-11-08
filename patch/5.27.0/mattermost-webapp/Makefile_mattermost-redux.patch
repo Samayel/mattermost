@@ -1,0 +1,16 @@
+diff --git a/Makefile b/Makefile
+index 64b5db07d..3fbdb1c63 100644
+--- a/Makefile
++++ b/Makefile
+@@ -23,6 +23,11 @@ node_modules: package.json package-lock.json
+ 
+ 	npm install
+
++	cd $(BUILD_WEBAPP_DIR)/node_modules/mattermost-redux && \
++		npm install && \
++		npm run build && \
++		cd ../../ 
++
+ package: build ## Packages app
+ 	@echo Packaging webapp
+ 
