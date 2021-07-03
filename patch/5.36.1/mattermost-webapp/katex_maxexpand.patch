@@ -1,0 +1,13 @@
+diff --git a/components/latex_block/latex_block.tsx b/components/latex_block/latex_block.tsx
+index 727ceea3a..c2d9169d7 100644
+--- a/components/latex_block/latex_block.tsx
++++ b/components/latex_block/latex_block.tsx
+@@ -41,7 +41,7 @@
+                 throwOnError: false,
+                 displayMode: true,
+                 maxSize: 200,
+-                maxExpand: 100,
++                maxExpand: 100000,
+                 fleqn: true,
+             };
+             const html = this.state.katex.renderToString(this.props.content, katexOptions);
