@@ -1,0 +1,34 @@
+diff --git a/app/license.go b/app/license.go
+index 2cc1ffd31..833589345 100644
+--- a/app/license.go
++++ b/app/license.go
+@@ -147,10 +147,7 @@ func (s *Server) SetClientLicense(m map[string]string) {
+ }
+ 
+ func (s *Server) ClientLicense() map[string]string {
+-	if clientLicense, _ := s.clientLicenseValue.Load().(map[string]string); clientLicense != nil {
+-		return clientLicense
+-	}
+-	return map[string]string{"IsLicensed": "false"}
++	return utils.GetClientLicense(s.License())
+ }
+ 
+ func (s *Server) RemoveLicense() *model.AppError {
+diff --git a/app/server_license.go b/app/server_license.go
+index 5b14ab865..40923dd53 100644
+--- a/app/server_license.go
++++ b/app/server_license.go
+@@ -6,6 +6,11 @@ package app
+ import "github.com/mattermost/mattermost-server/model"
+ 
+ func (s *Server) License() *model.License {
+-	license, _ := s.licenseValue.Load().(*model.License)
+-	return license
++	ret := &model.License{
++		ExpiresAt: model.GetMillis() + 720*24*60*60*1000,
++		Customer:  &model.Customer{},
++		Features:  &model.Features{},
++	}
++	ret.Features.SetDefaults()
++	return ret
+ }
